@@ -1,4 +1,8 @@
-use std::io::stdin;
+use std::{
+    io::{stdin, stdout, Write},
+    thread,
+    time::Duration,
+};
 
 use ::bevy::prelude::*;
 
@@ -40,10 +44,29 @@ fn startup(mut commands: Commands) {
 }
 
 fn location(query: Query<(&Name, &Description), (With<Location>, With<CurLocation>)>) {
-    println!("Current location: {}", query.single().0 .0);
+    let (name, description) = query.single();
+
+    animate_typing(&name.0.to_uppercase());
+    animate_typing(&description.0);
 
     let mut line = String::new();
     stdin().read_line(&mut line).unwrap();
 
     println!("Input: {line}");
+}
+
+fn animate_typing(text: &str) {
+    let chars: Vec<char> = text.chars().collect();
+
+    if chars.is_empty() {
+        return;
+    }
+
+    for ch in &chars.as_slice()[..(chars.len() - 1)] {
+        print!("{}", ch);
+        stdout().flush().unwrap();
+        thread::sleep(Duration::from_millis(10));
+    }
+
+    println!("{}", chars.last().unwrap());
 }
