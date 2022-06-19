@@ -26,11 +26,16 @@ struct CurLocation;
 #[derive(Component)]
 struct Item;
 
+/// The player wrote something
+struct InputEvent(String);
+
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
+        .add_event::<InputEvent>()
         .add_startup_system(startup)
         .add_system(location)
+        .add_system(parse_input.after(location))
         .run();
 }
 
@@ -41,9 +46,18 @@ fn startup(mut commands: Commands) {
         .insert(Name("Home".to_string()))
         .insert(Description("A cozy place for lovely people.".to_string()))
         .insert(CurLocation);
+
+    commands
+        .spawn()
+        .insert(Location)
+        .insert(Name("Not Home".to_string()))
+        .insert(Description("A weird place that's outside.".to_string()));
 }
 
-fn location(query: Query<(&Name, &Description), (With<Location>, With<CurLocation>)>) {
+fn location(
+    mut ev_input: EventWriter<InputEvent>,
+    query: Query<(&Name, &Description), (With<Location>, With<CurLocation>)>,
+) {
     let (name, description) = query.single();
 
     animate_typing(&name.0.to_uppercase());
@@ -52,9 +66,16 @@ fn location(query: Query<(&Name, &Description), (With<Location>, With<CurLocatio
     let mut line = String::new();
     stdin().read_line(&mut line).unwrap();
 
-    println!("Input: {line}");
+    ev_input.send(InputEvent(line.strip_suffix('\n').unwrap().to_owned()));
 }
 
+fn parse_input(mut ev_input: EventReader<InputEvent>) {
+    for ev in ev_input.iter() {
+        println!("Parsing input '{}'...", ev.0);
+    }
+}
+
+/// Give the text a typing animation
 fn animate_typing(text: &str) {
     let chars: Vec<char> = text.chars().collect();
 
