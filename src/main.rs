@@ -50,6 +50,7 @@ fn main() {
         .add_startup_system(startup)
         .add_system(location)
         .add_system(parse_input.after(location))
+        .add_system(handle_go.after(parse_input))
         .run();
 }
 
@@ -77,6 +78,9 @@ fn location(
     animate_typing(&name.0.to_uppercase());
     animate_typing(&description.0);
 
+    print!("> ");
+    stdout().flush().unwrap();
+
     let mut line = String::new();
     stdin().read_line(&mut line).unwrap();
 
@@ -101,6 +105,52 @@ fn parse_input(
                 "use" => ev_use.send(UseEvent(rest.to_string())),
                 _ => animate_typing(&format!("Unknown command: '{cmd_token}'")),
             }
+        }
+    }
+}
+
+fn handle_go(
+    mut commands: Commands,
+    mut ev_go: EventReader<GoEvent>,
+    query: Query<(Entity, &Name, Option<&CurLocation>), With<Location>>,
+) {
+    for ev in ev_go.iter() {
+        let target = ev.0.clone().to_uppercase();
+        let mut old_location: Option<Entity> = None;
+        let mut new_location: Option<(Entity, String)> = None;
+
+        for (entity, name, cur_location) in query.iter() {
+            let name = name.0.clone().to_uppercase();
+
+            // We are leaving the current location
+            if cur_location.is_some() {
+                old_location = Some(entity);
+            }
+
+            // Go to the new location
+            if name == target {
+                new_location = Some((entity, name))
+            }
+        }
+
+        if let Some((new_location, name)) = new_location {
+            if let Some(old_location) = old_location {
+                if old_location == new_location {
+                    // The player wants to go to the same location
+                    animate_typing(format!("You are already at {name}!").as_str());
+                    return;
+                }
+
+                // Leave the old location
+                commands.entity(old_location).remove::<CurLocation>();
+            }
+
+            // Enter the new location
+            commands.entity(new_location).insert(CurLocation);
+            animate_typing(format!("You are now at {name}!").as_str());
+        } else {
+            // Invalid location name
+            animate_typing(format!("I don't know what {target} is!").as_str());
         }
     }
 }
