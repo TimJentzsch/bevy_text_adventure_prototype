@@ -1,3 +1,5 @@
+#![feature(str_split_whitespace_as_str)]
+
 use std::{
     io::{stdin, stdout, Write},
     thread,
@@ -29,10 +31,22 @@ struct Item;
 /// The player wrote something
 struct InputEvent(String);
 
+/// The player issued a go command
+struct GoEvent(String);
+
+/// The player issued a look command
+struct LookEvent(String);
+
+/// The player issued a use command
+struct UseEvent(String);
+
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
         .add_event::<InputEvent>()
+        .add_event::<GoEvent>()
+        .add_event::<LookEvent>()
+        .add_event::<UseEvent>()
         .add_startup_system(startup)
         .add_system(location)
         .add_system(parse_input.after(location))
@@ -69,9 +83,25 @@ fn location(
     ev_input.send(InputEvent(line.strip_suffix('\n').unwrap().to_owned()));
 }
 
-fn parse_input(mut ev_input: EventReader<InputEvent>) {
+fn parse_input(
+    mut ev_input: EventReader<InputEvent>,
+    mut ev_go: EventWriter<GoEvent>,
+    mut ev_look: EventWriter<LookEvent>,
+    mut ev_use: EventWriter<UseEvent>,
+) {
     for ev in ev_input.iter() {
-        println!("Parsing input '{}'...", ev.0);
+        let mut tokens = ev.0.split_ascii_whitespace();
+
+        if let Some(cmd_token) = tokens.next() {
+            let rest = tokens.as_str();
+
+            match cmd_token.to_lowercase().as_str() {
+                "go" => ev_go.send(GoEvent(rest.to_string())),
+                "look" => ev_look.send(LookEvent(rest.to_string())),
+                "use" => ev_use.send(UseEvent(rest.to_string())),
+                _ => animate_typing(&format!("Unknown command: '{cmd_token}'")),
+            }
+        }
     }
 }
 
