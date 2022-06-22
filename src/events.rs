@@ -61,7 +61,7 @@ fn parse_input(
                 "go" => ev_go.send(GoEvent(rest.to_string())),
                 "look" => ev_look.send(LookEvent(rest.to_string())),
                 "use" => ev_use.send(UseEvent(rest.to_string())),
-                _ => animate_typing(&format!("Unknown command: '{cmd_token}'")),
+                _ => animate_typing(format!("Unknown command: '{cmd_token}'")),
             }
         }
     }
@@ -95,7 +95,7 @@ fn handle_go(
             if let Some(old_location) = old_location {
                 if old_location == new_location {
                     // The player wants to go to the same location
-                    animate_typing(format!("You are already at {name}!").as_str());
+                    animate_typing(format!("You are already at {name}!"));
                     return;
                 }
 
@@ -105,10 +105,10 @@ fn handle_go(
 
             // Enter the new location
             commands.entity(new_location).insert(CurLocation);
-            animate_typing(format!("You are now at {name}!").as_str());
+            animate_typing(format!("You are now at {name}!"));
         } else {
             // Invalid location name
-            animate_typing(format!("I don't know what {target} is!").as_str());
+            animate_typing(format!("I don't know what {target} is!"));
         }
     }
 }

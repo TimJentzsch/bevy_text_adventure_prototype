@@ -5,8 +5,11 @@ use std::{
 };
 
 /// Give the text a typing animation
-pub fn animate_typing(text: &str) {
-    let chars: Vec<char> = text.chars().collect();
+pub fn animate_typing<S>(text: S)
+where
+    S: AsRef<str>,
+{
+    let chars: Vec<char> = text.as_ref().chars().collect();
 
     if chars.is_empty() {
         return;
