@@ -49,7 +49,8 @@ fn main() {
         .add_event::<UseEvent>()
         .add_startup_system(startup)
         .add_system(location)
-        .add_system(parse_input.after(location))
+        .add_system(ask_input.after(location))
+        .add_system(parse_input.after(ask_input))
         .add_system(handle_go.after(parse_input))
         .run();
 }
@@ -69,15 +70,15 @@ fn startup(mut commands: Commands) {
         .insert(Description("A weird place that's outside.".to_string()));
 }
 
-fn location(
-    mut ev_input: EventWriter<InputEvent>,
-    query: Query<(&Name, &Description), (With<Location>, With<CurLocation>)>,
-) {
+fn location(query: Query<(&Name, &Description), (With<Location>, With<CurLocation>)>) {
     let (name, description) = query.single();
 
     animate_typing(&name.0.to_uppercase());
     animate_typing(&description.0);
+}
 
+/// Ask the player for new input
+fn ask_input(mut ev_input: EventWriter<InputEvent>) {
     print!("> ");
     stdout().flush().unwrap();
 
@@ -87,6 +88,7 @@ fn location(
     ev_input.send(InputEvent(line.strip_suffix('\n').unwrap().to_owned()));
 }
 
+/// Parse the input given by the player
 fn parse_input(
     mut ev_input: EventReader<InputEvent>,
     mut ev_go: EventWriter<GoEvent>,
