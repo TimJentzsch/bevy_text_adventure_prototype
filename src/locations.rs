@@ -14,12 +14,16 @@ impl Plugin for LocationPlugin {
 #[derive(Component)]
 pub struct Location;
 
-/// Mark the entity as the current location where the player is
+/// The location where the player currently is
 #[derive(Component)]
-pub struct CurLocation;
+pub struct CurLocation(pub Entity);
 
-fn location(query: Query<(&Name, &Description), (With<Location>, With<CurLocation>)>) {
-    let (name, description) = query.single();
+fn location(q_cur_location: Query<&CurLocation>, q_components: Query<(&Name, &Description)>) {
+    let cur_location = q_cur_location.single();
+
+    let (name, description) = q_components
+        .get(cur_location.0)
+        .expect("No current location defined!");
 
     animate_typing(&name.as_str().to_uppercase());
     animate_typing(&description.0);

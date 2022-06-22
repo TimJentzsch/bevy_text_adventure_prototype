@@ -68,22 +68,17 @@ fn parse_input(
 }
 
 fn handle_go(
-    mut commands: Commands,
     mut ev_go: EventReader<GoEvent>,
-    query: Query<(Entity, &Name, Option<&CurLocation>), With<Location>>,
+    mut q_cur_location: Query<&mut CurLocation>,
+    q_locations: Query<(Entity, &Name), With<Location>>,
 ) {
     for ev in ev_go.iter() {
         let target = ev.0.clone().to_uppercase();
-        let mut old_location: Option<Entity> = None;
+        let mut cur_location = q_cur_location.single_mut();
         let mut new_location: Option<(Entity, String)> = None;
 
-        for (entity, name, cur_location) in query.iter() {
+        for (entity, name) in q_locations.iter() {
             let name = name.as_str().to_uppercase();
-
-            // We are leaving the current location
-            if cur_location.is_some() {
-                old_location = Some(entity);
-            }
 
             // Go to the new location
             if name == target {
@@ -92,20 +87,14 @@ fn handle_go(
         }
 
         if let Some((new_location, name)) = new_location {
-            if let Some(old_location) = old_location {
-                if old_location == new_location {
-                    // The player wants to go to the same location
-                    animate_typing(format!("You are already at {name}!"));
-                    return;
-                }
-
-                // Leave the old location
-                commands.entity(old_location).remove::<CurLocation>();
+            if cur_location.0 == new_location {
+                // The player wants to go to the same location
+                animate_typing(format!("You are already at {name}!"));
+            } else {
+                // Change the location
+                cur_location.0 = new_location;
+                animate_typing(format!("You are now at {name}!"));
             }
-
-            // Enter the new location
-            commands.entity(new_location).insert(CurLocation);
-            animate_typing(format!("You are now at {name}!"));
         } else {
             // Invalid location name
             animate_typing(format!("I don't know what {target} is!"));

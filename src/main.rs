@@ -24,16 +24,18 @@ fn main() {
 }
 
 fn startup(mut commands: Commands) {
-    commands
+    let home = commands
         .spawn()
         .insert(Location)
         .insert(Name::new("Home"))
         .insert(Description("A cozy place for lovely people.".to_string()))
-        .insert(CurLocation);
+        .id();
 
     commands
         .spawn()
         .insert(Location)
         .insert(Name::new("Not Home"))
         .insert(Description("A weird place that's outside.".to_string()));
+
+    commands.spawn().insert(CurLocation(home));
 }
