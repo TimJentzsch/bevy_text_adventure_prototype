@@ -43,5 +43,21 @@ fn startup(mut commands: Commands) {
             "It's cloudy, maybe it's gonna rain soon.",
         ));
 
+    commands
+        .spawn()
+        .insert(Item)
+        .insert(Name::new("Desk"))
+        .insert(LookDescription::new(
+            "It's full of old papers and a thin layer of dust. It might be time for a clean up... maybe tomorrow."
+        ));
+
+    commands
+        .spawn()
+        .insert(Item)
+        .insert(Name::new("Chair"))
+        .insert(LookDescription::new(
+            "One of the legs is a bit shorter than the others, making it wiggle around every time you move."
+        ));
+
     commands.spawn().insert(CurLocation(home));
 }
