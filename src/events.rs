@@ -15,6 +15,7 @@ pub struct EventPlugin;
 impl Plugin for EventPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<InputEvent>()
+            .add_event::<HelpEvent>()
             .add_event::<GoEvent>()
             .add_event::<LookEvent>()
             .add_event::<UseEvent>()
@@ -23,6 +24,7 @@ impl Plugin for EventPlugin {
                     .label(EventSystems)
                     .with_system(ask_input)
                     .with_system(parse_input.after(ask_input))
+                    .with_system(handle_help.after(parse_input))
                     .with_system(handle_go.after(parse_input)),
             );
     }
@@ -30,6 +32,8 @@ impl Plugin for EventPlugin {
 
 /// The player wrote something
 struct InputEvent(String);
+
+struct HelpEvent;
 
 /// The player issued a go command
 struct GoEvent(String);
@@ -54,6 +58,7 @@ fn ask_input(mut ev_input: EventWriter<InputEvent>) {
 /// Parse the input given by the player
 fn parse_input(
     mut ev_input: EventReader<InputEvent>,
+    mut ev_help: EventWriter<HelpEvent>,
     mut ev_go: EventWriter<GoEvent>,
     mut ev_look: EventWriter<LookEvent>,
     mut ev_use: EventWriter<UseEvent>,
@@ -65,12 +70,25 @@ fn parse_input(
             let rest = tokens.as_str();
 
             match cmd_token.to_lowercase().as_str() {
+                "help" => ev_help.send(HelpEvent),
                 "go" => ev_go.send(GoEvent(rest.to_string())),
                 "look" => ev_look.send(LookEvent(rest.to_string())),
                 "use" => ev_use.send(UseEvent(rest.to_string())),
                 _ => animate_typing(format!("Unknown command: '{cmd_token}'")),
             }
         }
+    }
+}
+
+fn handle_help(mut ev_help: EventReader<HelpEvent>) {
+    for _ in ev_help.iter() {
+        animate_typing(
+            "Available commands:
+- HELP
+- GO <location>
+- LOOK <object>
+- USE <item>",
+        )
     }
 }
 
