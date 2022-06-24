@@ -4,12 +4,14 @@ use self::{
     go::{handle_go, GoEvent},
     help::{handle_help, HelpEvent},
     input::{ask_input, InputEvent},
+    look::{handle_look, LookEvent},
     parse::parse_input,
 };
 
 mod go;
 mod help;
 mod input;
+mod look;
 mod parse;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, SystemLabel)]
@@ -30,13 +32,11 @@ impl Plugin for CommandPlugin {
                     .with_system(ask_input)
                     .with_system(parse_input.after(ask_input))
                     .with_system(handle_help.after(parse_input))
-                    .with_system(handle_go.after(parse_input)),
+                    .with_system(handle_go.after(parse_input))
+                    .with_system(handle_look.after(parse_input)),
             );
     }
 }
-
-/// The player issued a look command
-pub struct LookEvent(String);
 
 /// The player issued a use command
 pub struct UseEvent(String);

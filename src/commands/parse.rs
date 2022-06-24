@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::output::animate_typing;
 
-use super::{go::GoEvent, input::InputEvent, HelpEvent, LookEvent, UseEvent};
+use super::{go::GoEvent, input::InputEvent, look::LookEvent, HelpEvent, UseEvent};
 
 /// Parse the input given by the player
 pub fn parse_input(
