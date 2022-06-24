@@ -2,11 +2,11 @@
 
 use bevy::prelude::*;
 use commands::CommandPlugin;
-use general::Description;
+use components::{go_description::GoDescription, look_description::LookDescription};
 use locations::{CurLocation, Location, LocationPlugin};
 
 mod commands;
-mod general;
+mod components;
 mod locations;
 mod output;
 
@@ -28,14 +28,20 @@ fn startup(mut commands: Commands) {
         .spawn()
         .insert(Location)
         .insert(Name::new("Home"))
-        .insert(Description("A cozy place for lovely people.".to_string()))
+        .insert(GoDescription::new("A cozy place for lovely people."))
+        .insert(LookDescription::new(
+            "A dim lamp lights your DESK, with an old CHAIR standing in front of it.",
+        ))
         .id();
 
     commands
         .spawn()
         .insert(Location)
         .insert(Name::new("Not Home"))
-        .insert(Description("A weird place that's outside.".to_string()));
+        .insert(GoDescription::new("A weird place that's outside."))
+        .insert(LookDescription::new(
+            "It's cloudy, maybe it's gonna rain soon.",
+        ));
 
     commands.spawn().insert(CurLocation(home));
 }

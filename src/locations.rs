@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
-use crate::{commands::EventSystems, general::Description, output::animate_typing};
+use crate::{
+    commands::EventSystems, components::go_description::GoDescription, output::animate_typing,
+};
 
 pub struct LocationPlugin;
 
@@ -18,13 +20,13 @@ pub struct Location;
 #[derive(Component)]
 pub struct CurLocation(pub Entity);
 
-fn location(q_cur_location: Query<&CurLocation>, q_components: Query<(&Name, &Description)>) {
+fn location(q_cur_location: Query<&CurLocation>, q_components: Query<(&Name, &GoDescription)>) {
     let cur_location = q_cur_location.single();
 
     let (name, description) = q_components
         .get(cur_location.0)
         .expect("No current location defined!");
 
-    animate_typing(&name.as_str().to_uppercase());
-    animate_typing(&description.0);
+    animate_typing(name.as_str().to_uppercase());
+    animate_typing(description);
 }

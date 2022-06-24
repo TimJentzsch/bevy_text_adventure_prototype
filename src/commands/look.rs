@@ -1,11 +1,14 @@
 use bevy::prelude::*;
 
-use crate::{general::Description, output::animate_typing};
+use crate::{components::look_description::LookDescription, output::animate_typing};
 
 /// The player issued a look command
 pub struct LookEvent(pub String);
 
-pub fn handle_look(mut ev_look: EventReader<LookEvent>, q_entities: Query<(&Name, &Description)>) {
+pub fn handle_look(
+    mut ev_look: EventReader<LookEvent>,
+    q_entities: Query<(&Name, &LookDescription)>,
+) {
     'event_loop: for ev in ev_look.iter() {
         let target = ev.0.clone().to_uppercase();
 
@@ -14,7 +17,7 @@ pub fn handle_look(mut ev_look: EventReader<LookEvent>, q_entities: Query<(&Name
 
             if name == target {
                 // Entity with the name found, show its description
-                animate_typing(description.0.clone());
+                animate_typing(description);
                 break 'event_loop;
             }
         }
