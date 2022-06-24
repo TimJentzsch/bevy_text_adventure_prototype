@@ -1,6 +1,6 @@
 #![feature(str_split_whitespace_as_str)]
 
-use ::bevy::prelude::*;
+use bevy::prelude::*;
 use events::EventPlugin;
 use general::Description;
 use locations::{CurLocation, Location, LocationPlugin};

@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
-use crate::{general::Description, output::animate_typing};
+use crate::{events::EventSystems, general::Description, output::animate_typing};
 
 pub struct LocationPlugin;
 
 impl Plugin for LocationPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(location);
+        app.add_system(location.before(EventSystems));
     }
 }
 

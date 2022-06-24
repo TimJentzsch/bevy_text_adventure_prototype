@@ -7,6 +7,9 @@ use crate::{
     output::animate_typing,
 };
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash, SystemLabel)]
+pub struct EventSystems;
+
 pub struct EventPlugin;
 
 impl Plugin for EventPlugin {
@@ -15,9 +18,13 @@ impl Plugin for EventPlugin {
             .add_event::<GoEvent>()
             .add_event::<LookEvent>()
             .add_event::<UseEvent>()
-            .add_system(ask_input)
-            .add_system(parse_input.after(ask_input))
-            .add_system(handle_go.after(parse_input));
+            .add_system_set(
+                SystemSet::new()
+                    .label(EventSystems)
+                    .with_system(ask_input)
+                    .with_system(parse_input.after(ask_input))
+                    .with_system(handle_go.after(parse_input)),
+            );
     }
 }
 
