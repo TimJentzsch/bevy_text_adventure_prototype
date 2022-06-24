@@ -10,9 +10,9 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Hash, SystemLabel)]
 pub struct EventSystems;
 
-pub struct EventPlugin;
+pub struct CommandPlugin;
 
-impl Plugin for EventPlugin {
+impl Plugin for CommandPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<InputEvent>()
             .add_event::<HelpEvent>()

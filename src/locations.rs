@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{events::EventSystems, general::Description, output::animate_typing};
+use crate::{commands::EventSystems, general::Description, output::animate_typing};
 
 pub struct LocationPlugin;
 

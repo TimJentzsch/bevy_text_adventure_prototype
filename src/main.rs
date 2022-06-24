@@ -1,11 +1,11 @@
 #![feature(str_split_whitespace_as_str)]
 
 use bevy::prelude::*;
-use events::EventPlugin;
+use commands::CommandPlugin;
 use general::Description;
 use locations::{CurLocation, Location, LocationPlugin};
 
-mod events;
+mod commands;
 mod general;
 mod locations;
 mod output;
@@ -18,7 +18,7 @@ fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
         .add_plugin(LocationPlugin)
-        .add_plugin(EventPlugin)
+        .add_plugin(CommandPlugin)
         .add_startup_system(startup)
         .run();
 }
