@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use commands::CommandPlugin;
 use items::ItemBundle;
 use locations::{CurLocation, LocationBundle, LocationPlugin};
-use relations::LocationConnection;
+use relations::{ItemAtLocation, LocationConnection};
 
 mod commands;
 mod components;
@@ -51,17 +51,23 @@ fn startup(mut commands: Commands) {
     commands.spawn().insert(LocationConnection(home, outside));
 
     // Items
-    commands
+    let desk = commands
         .spawn()
         .insert_bundle(ItemBundle::new(
             "Desk",
             "It's full of old papers and a thin layer of dust. It might be time for a clean up... maybe tomorrow."
-        ));
+        ))
+        .id();
 
-    commands
+    let chair = commands
         .spawn()
         .insert_bundle(ItemBundle::new(
             "Chair",
             "One of the legs is a bit shorter than the others, making it wiggle around every time you move."
-        ));
+        ))
+        .id();
+
+    // Item locations
+    commands.spawn().insert(ItemAtLocation(desk, home));
+    commands.spawn().insert(ItemAtLocation(chair, home));
 }

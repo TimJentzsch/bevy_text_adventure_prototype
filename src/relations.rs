@@ -20,3 +20,20 @@ impl LocationConnection {
         }
     }
 }
+
+/// Indicates that the item is available at the given location.
+///
+/// The first entity should have an [`Item`] component and the second entity should have a [`Location`] component.
+#[derive(Component)]
+pub struct ItemAtLocation(pub Entity, pub Entity);
+
+impl LocationConnection {
+    /// Gives the item entity if it is at the given location or [`None`] otherwise.
+    pub fn available_item(&self, location: Entity) -> Option<Entity> {
+        if location == self.1 {
+            Some(self.0)
+        } else {
+            None
+        }
+    }
+}
