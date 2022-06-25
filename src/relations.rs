@@ -27,7 +27,7 @@ impl LocationConnection {
 #[derive(Component)]
 pub struct ItemAtLocation(pub Entity, pub Entity);
 
-impl LocationConnection {
+impl ItemAtLocation {
     /// Gives the item entity if it is at the given location or [`None`] otherwise.
     pub fn available_item(&self, location: Entity) -> Option<Entity> {
         if location == self.1 {

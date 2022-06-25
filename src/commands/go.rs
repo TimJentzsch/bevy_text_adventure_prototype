@@ -15,9 +15,10 @@ pub fn handle_go(
     q_location_connections: Query<&LocationConnection>,
     q_locations: Query<(Entity, &Name), With<Location>>,
 ) {
+    let mut cur_location = q_cur_location.single_mut();
+
     for ev in ev_go.iter() {
         let target = ev.0.clone().to_uppercase();
-        let mut cur_location = q_cur_location.single_mut();
         let mut new_location: Option<(Entity, String)> = None;
 
         // Check which locations are connected to the current one
