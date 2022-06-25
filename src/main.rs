@@ -1,18 +1,17 @@
 #![feature(str_split_whitespace_as_str)]
+// Temporary until <https://github.com/bevyengine/bevy/issues/4601> is fixed
+#![allow(clippy::forget_non_drop)]
 
 use bevy::prelude::*;
 use commands::CommandPlugin;
-use components::look_description::LookDescription;
+use items::ItemBundle;
 use locations::{CurLocation, LocationBundle, LocationPlugin};
 
 mod commands;
 mod components;
+mod items;
 mod locations;
 mod output;
-
-/// Mark the entity as item
-#[derive(Component)]
-struct Item;
 
 fn main() {
     App::new()
@@ -41,17 +40,15 @@ fn startup(mut commands: Commands) {
 
     commands
         .spawn()
-        .insert(Item)
-        .insert(Name::new("Desk"))
-        .insert(LookDescription::new(
+        .insert_bundle(ItemBundle::new(
+            "Desk",
             "It's full of old papers and a thin layer of dust. It might be time for a clean up... maybe tomorrow."
         ));
 
     commands
         .spawn()
-        .insert(Item)
-        .insert(Name::new("Chair"))
-        .insert(LookDescription::new(
+        .insert_bundle(ItemBundle::new(
+            "Chair",
             "One of the legs is a bit shorter than the others, making it wiggle around every time you move."
         ));
 

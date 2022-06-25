@@ -20,10 +20,6 @@ impl Plugin for LocationPlugin {
 #[derive(Component)]
 pub struct Location;
 
-impl Drop for Location {
-    fn drop(&mut self) {}
-}
-
 /// The location where the player currently is
 #[derive(Component)]
 pub struct CurLocation(pub Entity);
