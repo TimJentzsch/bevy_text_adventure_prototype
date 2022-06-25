@@ -6,12 +6,14 @@ use bevy::prelude::*;
 use commands::CommandPlugin;
 use items::ItemBundle;
 use locations::{CurLocation, LocationBundle, LocationPlugin};
+use relations::LocationConnection;
 
 mod commands;
 mod components;
 mod items;
 mod locations;
 mod output;
+mod relations;
 
 fn main() {
     App::new()
@@ -23,6 +25,7 @@ fn main() {
 }
 
 fn startup(mut commands: Commands) {
+    // Locations
     let home = commands
         .spawn()
         .insert_bundle(LocationBundle::new(
@@ -32,12 +35,22 @@ fn startup(mut commands: Commands) {
         ))
         .id();
 
-    commands.spawn().insert_bundle(LocationBundle::new(
-        "Outside",
-        "A weird place that's outside.",
-        "It's cloudy, maybe it's gonna rain soon.",
-    ));
+    let outside = commands
+        .spawn()
+        .insert_bundle(LocationBundle::new(
+            "Outside",
+            "A weird place that's outside.",
+            "It's cloudy, maybe it's gonna rain soon.",
+        ))
+        .id();
 
+    // Current location
+    commands.spawn().insert(CurLocation(home));
+
+    // Location connections
+    commands.spawn().insert(LocationConnection(home, outside));
+
+    // Items
     commands
         .spawn()
         .insert_bundle(ItemBundle::new(
@@ -51,6 +64,4 @@ fn startup(mut commands: Commands) {
             "Chair",
             "One of the legs is a bit shorter than the others, making it wiggle around every time you move."
         ));
-
-    commands.spawn().insert(CurLocation(home));
 }
